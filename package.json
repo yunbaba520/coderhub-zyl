@@ -1,0 +1,18 @@
+{
+  "name": "coderhub-zyl",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "node ./src/main.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@koa/router": "^12.0.0",
+    "dotenv": "^16.0.3",
+    "koa": "^2.14.1",
+    "koa-bodyparser": "^4.3.0"
+  }
+}
