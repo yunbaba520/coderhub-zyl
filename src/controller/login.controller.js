@@ -22,6 +22,9 @@ class LoginController {
             }
         }
     }
+    testToken(ctx, next) {
+        ctx.body = '验证通过'
+    }
 }
 
 module.exports = new LoginController()

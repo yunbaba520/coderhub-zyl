@@ -1,17 +1,22 @@
-const { USER_NAME_AND_PASSWORD_IS_NOT_NULL, USER_NAME_IS_NOT_EXISTS, USER_PASSWORD_IS_ERROR } = require("../config/constant.config");
+const jwt = require('jsonwebtoken')
+const { 
+    USER_NAME_AND_PASSWORD_IS_NOT_NULL,
+    USER_NAME_IS_NOT_EXISTS,
+    USER_PASSWORD_IS_ERROR,
+    UNAUTHORIZATION
+} = require("../config/constant.config");
+const { PUBLIC_KEY } = require('../config/screct.config');
 const { findUserByName } = require("../service/user.service");
 const md5Password = require("../utils/md5-password");
 
 const verifyLogin = async (ctx,next)=>{
     const {name,password} = ctx.request.body
-    console.log(name,password);
     // 验证是否为空
     if (!name || !password) {
         return ctx.app.emit('error', USER_NAME_AND_PASSWORD_IS_NOT_NULL, ctx)
     }
     // 验证name是否正确
     const [user] = await findUserByName(name)
-    console.log(user);
     if (!user) {
         return ctx.app.emit('error', USER_NAME_IS_NOT_EXISTS, ctx)
     }
@@ -23,7 +28,22 @@ const verifyLogin = async (ctx,next)=>{
     ctx.user = user
     await next()
 }
+const verifyToken = async (ctx, next) => {
+    const authorization = ctx.headers.authorization
+    const token = authorization.replace('Bearer ','')
+    try {
+        const res = jwt.verify(token,PUBLIC_KEY,{
+            algorithms: ["RS256"]
+        })
+        ctx.user = res
+        await next()
+    } catch (error) {
+        return ctx.app.emit('error', UNAUTHORIZATION, ctx)
+    }
 
+    
+}
 module.exports = {
-    verifyLogin
+    verifyLogin,
+    verifyToken
 }
