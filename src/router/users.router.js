@@ -6,7 +6,8 @@ const userRouter = new KoaRouter({
     prefix: '/users'
 })
 // 路由映射，把相关操作抽取到controller中
-userRouter.post('/list',verifyUser,handlePassword,userController.create)
+// 用户注册
+userRouter.post('/register',verifyUser,handlePassword,userController.create)
 
 
 module.exports = userRouter
