@@ -11,6 +11,11 @@ class CommentService {
         const [res] = await connection.execute(statement,[content,momentId,commentId,userId])
         return res
     }
+    async remove(commentId) {
+        const statement = 'DELETE FROM comment WHERE id = ?;'
+        const [res] = await connection.execute(statement,[commentId])
+        return res
+    }
 }
 
 module.exports = new CommentService()
