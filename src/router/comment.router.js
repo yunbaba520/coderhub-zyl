@@ -7,6 +7,8 @@ const commentRouter = new KoaRouter({
 })
 // 发表评论，需要登录
 commentRouter.post('/',verifyToken,commentController.create)
+// 回复评论，需要登录
+commentRouter.post('/reply',verifyToken,commentController.reply)
 module.exports = commentRouter
 
 
