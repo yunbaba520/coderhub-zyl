@@ -13,4 +13,8 @@ momentRouter.get('/list',momentController.queryList)
 momentRouter.get('/detail/:momentId',momentController.queryDetail)
 // 修改动态，需要登录，只能修改自己动态
 momentRouter.patch('/update/:momentId',verifyToken,verifyMomentAuthority,momentController.update)
+// 删除动态,需要登录，只能删除自己动态
+momentRouter.delete('/delete/:momentId',verifyToken,verifyMomentAuthority,momentController.remove)
+
+
 module.exports = momentRouter

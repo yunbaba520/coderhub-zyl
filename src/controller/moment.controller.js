@@ -45,5 +45,16 @@ class MomentController {
             data: res
         }
     }
+    async remove(ctx,next) {
+        // 获取momentId
+        const {momentId} = ctx.params
+        // 操作数据库
+        const res = await momentService.remove(momentId)
+        ctx.body = {
+            code: 0,
+            message: '删除动态成功',
+            data: res
+        }
+    }
 }
 module.exports = new MomentController()
