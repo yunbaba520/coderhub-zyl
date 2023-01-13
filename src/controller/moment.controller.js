@@ -23,5 +23,14 @@ class MomentController {
             data: res
         }
     }
+    async queryDetail(ctx, next) {
+        const momentId = ctx.params.momentId
+        const res = await momentService.queryDetail(momentId)
+        ctx.body = {
+            code: 0,
+            message: '获取详情成功',
+            data: res[0]
+        }
+    }
 }
 module.exports = new MomentController()

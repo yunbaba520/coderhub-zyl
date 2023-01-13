@@ -8,4 +8,6 @@ const momentRouter = new KoaRouter({
 momentRouter.post('/',verifyToken ,momentController.create)
 // 获取动态列表，不需要登录
 momentRouter.get('/list',momentController.queryList)
+// 获取动态详情，不需要登录
+momentRouter.get('/detail/:momentId',momentController.queryDetail)
 module.exports = momentRouter

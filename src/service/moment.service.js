@@ -20,6 +20,19 @@ class MomentService {
 
         return values
     }
+    async queryDetail(momentId) {
+        const statement = `
+            SELECT 
+                m.id id,m.content content,m.createAt createAt,m.updateAt updateAt,
+                JSON_OBJECT('id',u.id,'name',u.name,'createAt',u.createAt,'updateAt',u.updateAt) user
+            FROM moment m
+            LEFT JOIN user u
+            ON u.id = m.user_id
+            WHERE m.id = ?
+        `
+        const [values] = await connection.execute(statement,[momentId])
+        return values
+    }
 }
 
 module.exports = new MomentService()
