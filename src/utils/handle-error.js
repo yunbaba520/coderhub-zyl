@@ -4,7 +4,8 @@ const {
     USER_NAME_IS_EXISTS,
     USER_NAME_IS_NOT_EXISTS,
     USER_PASSWORD_IS_ERROR,
-    UNAUTHORIZATION
+    UNAUTHORIZATION,
+    UNAUTHORITY
 } = require('../config/constant.config');
 app.on('error',(error,ctx)=>{
     let code = 0
@@ -29,6 +30,10 @@ app.on('error',(error,ctx)=>{
         case UNAUTHORIZATION:
             code = -1005
             message = '无效的token,或token已过期~'
+            break;
+        case UNAUTHORITY:
+            code = -1006
+            message = '您没有权利进行此操作~'
             break;
         default:
             break;
