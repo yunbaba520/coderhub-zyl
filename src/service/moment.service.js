@@ -6,6 +6,12 @@ class MomentService {
         const [res] = await connection.execute(statement,[content,id])
         return res
     }
+    // 动态保存相关区label
+    async saveLabel(momentId,labelId) {
+        const statement = 'INSERT INTO moment_label (moment_id,label_id) VALUES (?,?);'
+        const [res] = await connection.execute(statement,[momentId,labelId])
+        return res
+    }
     async queryList(offset = 0,size = 10) {
         const statement = `
             SELECT 
@@ -47,6 +53,12 @@ class MomentService {
     async update(momentId,content) {
         const statement = 'UPDATE moment SET content = ? WHERE id = ?;'
         const [res] = await connection.execute(statement,[content,momentId])
+        return res
+    }
+    // 删除动态all标签
+    async deletelabelById(momentId) {
+        const statement = 'DELETE FROM moment_label WHERE moment_id = ?;'
+        const [res] = await connection.execute(statement,[momentId])
         return res
     }
     async remove(momentId) {
