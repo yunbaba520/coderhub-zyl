@@ -6,4 +6,6 @@ const labelRouter = new KoaRouter({
 })
 // 创建用户标签,需要登录
 labelRouter.post('/',verifyToken,labelController.create)
+// 获取标签列表
+labelRouter.post('/list',labelController.queryList)
 module.exports = labelRouter
