@@ -17,7 +17,8 @@ class MomentService {
             SELECT 
                 m.id id,m.content content,m.createAt createAt,m.updateAt updateAt,
                 JSON_OBJECT('id',u.id,'name',u.name,'createAt',u.createAt,'updateAt',u.updateAt) user,
-                (SELECT COUNT(*) FROM comment WHERE moment_id = m.id) commentCount
+                (SELECT COUNT(*) FROM comment WHERE moment_id = m.id) commentCount,
+                (SELECT COUNT(*) FROM moment_label ml WHERE ml.moment_id = m.id) labelCount
             FROM moment m
             LEFT JOIN user u
             ON u.id = m.user_id
@@ -32,19 +33,37 @@ class MomentService {
             SELECT 
                 m.id id,m.content content,m.createAt createAt,m.updateAt updateAt,
                 JSON_OBJECT('id',u.id,'name',u.name,'createAt',u.createAt,'updateAt',u.updateAt) user,
-                JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        'id',c.id,'content',c.content,'createAt',c.createAt,'momentId',c.moment_id,'commentId',c.comment_id,
-                        'user',JSON_OBJECT('id',cu.id,'name',cu.name)
-                    )
-                ) commentList
+                (
+                    SELECT
+                        JSON_ARRAYAGG(
+                            JSON_OBJECT(
+                                'id',c.id,
+                                'content',c.content,
+                                'createAt',c.createAt,
+                                'momentId',c.moment_id,
+                                'commentId',c.comment_id,
+                                'user', JSON_OBJECT('id', cu.id, 'name', cu.name)
+                                
+                            )
+                        )  
+                    FROM comment c 
+                    LEFT JOIN user cu ON c.user_id = cu.id
+                    WHERE c.moment_id = m.id
+                ) commentList,
+                (
+                    SELECT 
+                        JSON_ARRAYAGG(
+                            JSON_OBJECT(
+                                'id',l.id,
+                                'name',l.name
+                            )
+                        )
+                    FROM moment_label ml
+                    LEFT JOIN label l ON ml.label_id = l.id
+                    WHERE ml.moment_id = m.id
+                ) labelList
             FROM moment m
-            LEFT JOIN user u
-            ON u.id = m.user_id
-            LEFT JOIN comment c
-            ON c.moment_id = m.id
-            LEFT JOIN user cu
-            ON cu.id = c.user_id
+            LEFT JOIN user u ON u.id = m.user_id
             WHERE m.id = ?;
         `
         const [values] = await connection.execute(statement,[momentId])
