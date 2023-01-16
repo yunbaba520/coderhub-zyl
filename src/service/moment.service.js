@@ -20,8 +20,7 @@ class MomentService {
                 (SELECT COUNT(*) FROM comment WHERE moment_id = m.id) commentCount,
                 (SELECT COUNT(*) FROM moment_label ml WHERE ml.moment_id = m.id) labelCount
             FROM moment m
-            LEFT JOIN user u
-            ON u.id = m.user_id
+            LEFT JOIN user u ON u.id = m.user_id
             LIMIT ? OFFSET ?
         `
         const [values] = await connection.execute(statement,[size,offset])

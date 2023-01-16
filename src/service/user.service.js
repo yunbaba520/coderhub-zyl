@@ -31,6 +31,12 @@ class UserService {
         return res.pop()
 
     }
+    // 在user表保存avatar_url
+    async saveAvatarUrl(avatarUrl,userId) {
+        const statement = 'UPDATE user SET avatar_url = ? WHERE id = ?;'
+        const [res] = await connection.execute(statement,[avatarUrl,userId])
+        return res
+    }
 }
 
 module.exports = new UserService()

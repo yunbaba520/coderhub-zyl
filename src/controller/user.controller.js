@@ -1,5 +1,6 @@
 const userService = require('../service/user.service')
 const {USER_AVATAR_PATH} = require('../config/path.config')
+const {SERVER_PORT,SERVER_HOST} = require('../config/server.config')
 const fs = require('fs')
 class UserController {
     async create(ctx, next) {
@@ -20,11 +21,13 @@ class UserController {
         const {filename,originalname,mimetype,size} = ctx.request.file
         const {id} = ctx.user
         // 操作数据库
-        const res = await userService.saveAvatar(filename,originalname,mimetype,size,id)
+        await userService.saveAvatar(filename,originalname,mimetype,size,id)
+        const avatarUrlTemp = `${SERVER_HOST}:${SERVER_PORT}/users/avatar/${id}`
+        await userService.saveAvatarUrl(avatarUrlTemp,id)
         ctx.body = {
             code: 0,
             message: "头像上传成功",
-            data: res
+            data: avatarUrlTemp
         }
     }
     async showAvatar(ctx, next) {
