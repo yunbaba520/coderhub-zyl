@@ -1,21 +1,37 @@
+const { MOMENT_IMG_PATH } = require("../config/path.config");
+const {SERVER_PORT,SERVER_HOST} = require('../config/server.config')
 const momentService = require("../service/moment.service");
-
+const fs = require('fs')
 class MomentController {
-    async create(ctx, next) {
+    // 发表动态，带配图，带labels
+    async createMoment(ctx,next) {
         // 获取用户id与发布的评论，相关label
         const {content,labels} = ctx.request.body
+        // console.log(labels);
         const {id} = ctx.user
-        // console.log(content,labels,id);
+        // 配图列表
+        // console.log(ctx.request.files);
+        const pictures = ctx.request.files
         // 将数据保存到数据库
+        
         const res = await momentService.create(content,id)
         const momentId = res.insertId
         for (const label of labels) {
-            const resLabel = await momentService.saveLabel(momentId,label)
+            await momentService.saveLabel(momentId,label)
+        }
+        
+        // 保存图片
+        for (const file of pictures) {
+            const {filename,originalname,mimetype,size} = file
+            const res = await momentService.savePicture(filename,originalname,mimetype,size,momentId)
+            // 保存picture的url
+            const pictureId = res.insertId
+            const pictureUrl = `${SERVER_HOST}:${SERVER_PORT}/moment/picture/${pictureId}`
+            await momentService.savePictureUrlById(pictureId,pictureUrl)
         }
         ctx.body = {
             code: 0,
-            message: '发布成功',
-            data: res
+            message: '发布动态成功'
         }
     }
     async queryList(ctx, next) {
@@ -41,20 +57,30 @@ class MomentController {
         // 获取动态id及修改内容
         const {momentId} = ctx.params
         const {content,labels} = ctx.request.body
-        console.log(momentId,content,labels);
+        const pictures = ctx.request.files
         // 修改数据库
         // 修改moment
-        const res = await momentService.update(momentId,content)
+        await momentService.update(momentId,content)
         // 删除以前所有动态相关标签，关系表
         await momentService.deletelabelById(momentId)
         // 加入新的关系
         for (const label of labels) {
             await momentService.saveLabel(momentId,label)
         }
+        // 删除以前动态的所有配图
+        await momentService.deletePictureById(momentId)
+        // 加入新的图片
+        for (const file of pictures) {
+            const {filename,originalname,mimetype,size} = file
+            const res = await momentService.savePicture(filename,originalname,mimetype,size,momentId)
+            // 保存picture的url
+            const pictureId = res.insertId
+            const pictureUrl = `${SERVER_HOST}:${SERVER_PORT}/moment/picture/${pictureId}`
+            await momentService.savePictureUrlById(pictureId,pictureUrl)
+        }
         ctx.body = {
             code: 0,
-            message: "修改动态成功",
-            data: res
+            message: "修改动态成功"
         }
     }
     async remove(ctx,next) {
@@ -67,6 +93,16 @@ class MomentController {
             message: '删除动态成功',
             data: res
         }
+    }
+    // 查看配图
+    async showPicture(ctx,next) {
+        const {pictureId} = ctx.params
+        // 查询数据库
+        const {filename,mimetype} = await momentService.getPictureById(pictureId)
+        // 根据信息读取文件
+        ctx.type = mimetype
+        // ctx.body可以接受stream流
+        ctx.body = fs.createReadStream(`${MOMENT_IMG_PATH}/${filename}`)
     }
 }
 module.exports = new MomentController()

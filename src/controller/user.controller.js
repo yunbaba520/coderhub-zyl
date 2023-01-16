@@ -16,7 +16,6 @@ class UserController {
         }
     }
     async uploadAvatar(ctx, next) {
-        console.log(ctx.request.file);
         // 获取上传文件的信息
         const {filename,originalname,mimetype,size} = ctx.request.file
         const {id} = ctx.user
