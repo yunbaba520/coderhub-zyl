@@ -23,6 +23,14 @@ class UserService {
         const [res] = await connection.execute(statement,[filename,originalname,mimetype,size,userId])
         return res
     }
+    // 根据userId查找头像
+    async getAvatarByUserId(userId) {
+        const statement = 'SELECT * FROM avatar WHERE user_id = ?;'
+        const [res] = await connection.execute(statement,[userId])
+        // 可能上传多次头像，获取最后一个，pop删除最后一个并把值返回
+        return res.pop()
+
+    }
 }
 
 module.exports = new UserService()

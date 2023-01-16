@@ -1,5 +1,6 @@
 const userService = require('../service/user.service')
-
+const {USER_AVATAR_PATH} = require('../config/path.config')
+const fs = require('fs')
 class UserController {
     async create(ctx, next) {
         // 1.获取用户传递信息
@@ -25,6 +26,16 @@ class UserController {
             message: "头像上传成功",
             data: res
         }
+    }
+    async showAvatar(ctx, next) {
+        // 获取userId
+        const {userId} = ctx.params
+        // 查询数据库
+        const {filename,mimetype} = await userService.getAvatarByUserId(userId)
+        // 根据信息读取文件
+        ctx.type = mimetype
+        // ctx.body可以接受stream流
+        ctx.body = fs.createReadStream(`${USER_AVATAR_PATH}/${filename}`)
     }
 }
 
