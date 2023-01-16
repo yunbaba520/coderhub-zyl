@@ -13,6 +13,19 @@ class UserController {
             data: res
         }
     }
+    async uploadAvatar(ctx, next) {
+        console.log(ctx.request.file);
+        // 获取上传文件的信息
+        const {filename,originalname,mimetype,size} = ctx.request.file
+        const {id} = ctx.user
+        // 操作数据库
+        const res = await userService.saveAvatar(filename,originalname,mimetype,size,id)
+        ctx.body = {
+            code: 0,
+            message: "头像上传成功",
+            data: res
+        }
+    }
 }
 
 module.exports = new UserController()

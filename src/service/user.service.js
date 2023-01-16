@@ -17,6 +17,12 @@ class UserService {
         const [values] = await connection.execute(statement, [name])
         return values
     }
+    // 保存avatar信息
+    async saveAvatar(filename,originalname,mimetype,size,userId) {
+        const statement = 'INSERT INTO avatar (filename,originalname,mimetype,size,user_id) VALUES (?,?,?,?,?);'
+        const [res] = await connection.execute(statement,[filename,originalname,mimetype,size,userId])
+        return res
+    }
 }
 
 module.exports = new UserService()
