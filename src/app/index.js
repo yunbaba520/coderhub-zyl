@@ -1,8 +1,10 @@
 const Koa = require('koa')
 const bodyparser = require('koa-bodyparser')
 const registryRouters = require('../router/index')
-const app = new Koa()
+const cors = require("@koa/cors")
 
+const app = new Koa()
+app.use(cors())
 // 使用第三方库解析json数据
 app.use(bodyparser())
 // 路由
